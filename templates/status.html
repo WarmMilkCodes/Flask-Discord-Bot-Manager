@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Bot Manager</title>
+</head>
+<body>
+	<h1>Bot Manager</h1>
+	<table>
+		<tr>
+			<th>Name</th>
+			<th>Status</th>
+			<th>Actions</th>
+		</tr>
+		{% for bot in bots %}
+		<tr>
+			<td>{{ bot.name }}</td>
+			<td>{{ bot.status }}</td>
+			<td>
+				{% if bot.status == 'online' %}
+				<a href="/stop/{{ bot.id }}">Stop</a>
+				{% else %}
+				<a href="/start/{{ bot.id }}">Start</a>
+				{% endif %}
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+</body>
+</html>
