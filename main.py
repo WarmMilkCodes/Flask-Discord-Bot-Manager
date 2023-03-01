@@ -9,7 +9,7 @@ app = Flask(__name__)
 username = config.user_name
 password = config.password
 
-# define bots pm2 process IDs
+# define bots systemctl
 bot_processes = {
     'bot1':0,
     'bot2':1
@@ -35,23 +35,18 @@ def login():
 @app.route('/status')
 def status():
     # get the status of the bots
-    cmd = "pm2 jlist"
-    result = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
-    output = result.stdout.decode('utf-8')
-
-    # parse the JSON output and get the status of each bot
     bot_statuses = []
-    for bot in json.loads(output):
+    for bot_name in bot_processes:
         # get CPU and memory usage for the bot process
-        pid = bot['pid']
-        cpu_usage = psutil.Process(pid).cpu_percent()
-        memory_usage = psutil.Process(pid).memory_percent()
+        cmd = f"systemctl status {bot_name}"
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
+        output = result.stdout.decode('utf-8')
 
         bot_statuses.append({
-            'name': bot['name'],
-            'status': bot['pm2_env']['status'],
-            'cpu_usage': cpu_usage,
-            'memory_usage': memory_usage
+            'name': bot_name,
+            'status': 'running' if 'Active: active' in output else 'stopped',
+            'cpu_usage': 0,  # replace with actual CPU usage
+            'memory_usage': 0  # replace with actual memory usage
         })
 
     # get system-wide network activity
@@ -70,11 +65,9 @@ def logs(bot_name):
     if bot_name not in bot_processes:
         return f'{bot_name} not found', 404
 
-    # get pm2 process ID for bot
-    process_id = bot_processes[bot_name]
-
-    # tail the log file for pm2 process
-    log_process = subprocess.Popen(['pm2', 'logs', str(process_id)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # get logs for bot
+    cmd = f"journalctl -u {bot_name} -f"
+    log_process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
 
     # function to generate SSE events from log output
     def log_events():
@@ -87,12 +80,6 @@ def logs(bot_name):
     # return response with SSE headers and event generator function
     return Response(log_events(), mimetype='text/event-stream')
 
-    if request.method == 'POST':
-        selected_bot = request.form['bot']
-        logs = subprocess.check_output(['pm2', 'logs', '--lines', '100', selected_bot]).decode('utf-8')
-        return render_template('logs.html', bots=['bot1', 'bot2', 'bot3'], logs=logs, selected_bot=selected_bot)
-    else:
-        return render_template('logs.html', bots=['bot1', 'bot2', 'bot3'])
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)

@@ -7,7 +7,7 @@
 	<h1>Bot Logs</h1>
 	<form method="POST" action="{{ url_for('logs') }}">
 		<select name="bot">
-			{% for bot in bots %}
+			{% for bot in bot_processes %}
 			<option value="{{ bot }}">{{ bot }}</option>
 			{% endfor %}
 		</select>

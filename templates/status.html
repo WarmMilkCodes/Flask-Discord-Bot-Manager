@@ -15,20 +15,20 @@
 			<th>Network Activity</th>
 			<th>Actions</th>
 		</tr>
-		{% for bot in bots %}
+		{% for bot in bot_statuses %}
 		<tr>
 			<td>{{ bot.name }}</td>
 			<td>{{ bot.status }}</td>
-			<td>{{ bot.cpu_usage }}</td>
-			<td>{{ bot.memory_usage }}</td>
-			<td>{{ bot.network_activity }}</td>
+			<td>{{ bot.cpu_usage }}%</td>
+			<td>{{ bot.memory_usage }}%</td>
+			<td>Sent: {{ network_stats.sent }}, Received: {{ network_stats.received }}</td>
 			<td>
-				{% if bot.status == 'online' %}
+				{% if bot.status == 'running' %}
                 <i class="fas fa-signal" style="color: green;"></i>
                 <span>Connected</span>
-				<a href="/stop/{{ bot.id }}">Stop</a>
+				<a href="/stop/{{ bot.name }}">Stop</a>
 				{% else %}
-				<a href="/start/{{ bot.id }}">Start</a>
+				<a href="/start/{{ bot.name }}">Start</a>
                 <i class="fas fa-signal" style="color: red;"></i>
                 <span>Offline</span>
 				{% endif %}
