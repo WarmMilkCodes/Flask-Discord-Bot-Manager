@@ -1,7 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Bot Manager</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bot Status</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-qY0zvRLeV38o+xfyT/l/NXd14IWPPp+X9/gKjxHz2QVzBLHUIJzkFzl+83sEgFkjAaIMCyvsm98lX9jZlRo/aw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    {% for bot in bot_status %}
+    <h1>{{ bot['name'] }}</h1>
+    {% if bot['status'] %}
+        <i class="fas fa-signal" style="color: green;"></i>
+        <span>Connected</span>
+    {% else %}
+        <i class="fas fa-signal" style="color: red;"></i>
+        <span>Offline</span>
+    {% endif %}
+    {% endfor %}
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Bot Status</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-qY0zvRLeV38o+xfyT/l/NXd14IWPPp+X9/gKjxHz2QVzBLHUIJzkFzl+83sEgFkjAaIMCyvsm98lX9jZlRo/aw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
 	<h1>Bot Manager</h1>
@@ -17,9 +41,13 @@
 			<td>{{ bot.status }}</td>
 			<td>
 				{% if bot.status == 'online' %}
+                <i class="fas fa-signal" style="color: green;"></i>
+                <span>Connected</span>
 				<a href="/stop/{{ bot.id }}">Stop</a>
 				{% else %}
 				<a href="/start/{{ bot.id }}">Start</a>
+                <i class="fas fa-signal" style="color: red;"></i>
+                <span>Offline</span>
 				{% endif %}
 			</td>
 		</tr>
