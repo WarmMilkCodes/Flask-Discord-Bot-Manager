@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, json, Response
 import subprocess
 import config
+import psutil
 
 app = Flask(__name__)
 
@@ -30,6 +31,7 @@ def login():
     else:
         return "Invalid username or password. Please try again."
 
+
 @app.route('/status')
 def status():
     # get the status of the bots
@@ -40,12 +42,27 @@ def status():
     # parse the JSON output and get the status of each bot
     bot_statuses = []
     for bot in json.loads(output):
+        # get CPU and memory usage for the bot process
+        pid = bot['pid']
+        cpu_usage = psutil.Process(pid).cpu_percent()
+        memory_usage = psutil.Process(pid).memory_percent()
+
         bot_statuses.append({
             'name': bot['name'],
-            'status': bot['pm2_env']['status']
+            'status': bot['pm2_env']['status'],
+            'cpu_usage': cpu_usage,
+            'memory_usage': memory_usage
         })
 
-    return render_template('status.html', bot_statuses=bot_statuses)
+    # get system-wide network activity
+    net_io_counters = psutil.net_io_counters()
+    network_stats = {
+        'sent': net_io_counters.bytes_sent,
+        'received': net_io_counters.bytes_recv
+    }
+
+    return render_template('status.html', bot_statuses=bot_statuses, network_stats=network_stats)
+
 
 @app.route('/logs/<bot_name>')
 def logs(bot_name):

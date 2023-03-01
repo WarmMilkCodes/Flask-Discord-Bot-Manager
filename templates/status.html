@@ -1,29 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bot Status</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-qY0zvRLeV38o+xfyT/l/NXd14IWPPp+X9/gKjxHz2QVzBLHUIJzkFzl+83sEgFkjAaIMCyvsm98lX9jZlRo/aw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
-<body>
-    {% for bot in bot_status %}
-    <h1>{{ bot['name'] }}</h1>
-    {% if bot['status'] %}
-        <i class="fas fa-signal" style="color: green;"></i>
-        <span>Connected</span>
-    {% else %}
-        <i class="fas fa-signal" style="color: red;"></i>
-        <span>Offline</span>
-    {% endif %}
-    {% endfor %}
-</body>
-</html>
-
-
-<!DOCTYPE html>
-<html>
-<head>
 	<title>Bot Status</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-qY0zvRLeV38o+xfyT/l/NXd14IWPPp+X9/gKjxHz2QVzBLHUIJzkFzl+83sEgFkjAaIMCyvsm98lX9jZlRo/aw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
@@ -33,12 +10,18 @@
 		<tr>
 			<th>Name</th>
 			<th>Status</th>
+			<th>CPU Usage</th>
+			<th>Memory Usage</th>
+			<th>Network Activity</th>
 			<th>Actions</th>
 		</tr>
 		{% for bot in bots %}
 		<tr>
 			<td>{{ bot.name }}</td>
 			<td>{{ bot.status }}</td>
+			<td>{{ bot.cpu_usage }}</td>
+			<td>{{ bot.memory_usage }}</td>
+			<td>{{ bot.network_activity }}</td>
 			<td>
 				{% if bot.status == 'online' %}
                 <i class="fas fa-signal" style="color: green;"></i>
