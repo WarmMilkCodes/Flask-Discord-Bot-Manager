@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Bot Logs</title>
+</head>
+<body>
+	<h1>Bot Logs</h1>
+	<form method="POST" action="{{ url_for('logs') }}">
+		<select name="bot">
+			{% for bot in bots %}
+			<option value="{{ bot }}">{{ bot }}</option>
+			{% endfor %}
+		</select>
+		<input type="submit" value="Select Bot">
+	</form>
+	{% if logs %}
+	<h2>Logs for {{ selected_bot }}:</h2>
+	<pre>{{ logs }}</pre>
+	{% endif %}
+</body>
+</html>
