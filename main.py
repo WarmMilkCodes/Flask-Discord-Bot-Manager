@@ -11,8 +11,7 @@ password = config.password
 
 # define bots systemctl
 bot_processes = {
-    'bot1':0,
-    'bot2':1
+    'urowbot': 'urowbot.service',
 }
 
 @app.route('/')
@@ -32,8 +31,30 @@ def login():
         return "Invalid username or password. Please try again."
 
 
-@app.route('/status')
+@app.route('/status', methods=['GET', 'POST'])
 def status():
+    print('in status() function')
+    # initialize the action variable
+    action = None
+
+    if request.method == 'POST':
+        bot_name = request.form['bot_name']
+        action = request.form['action']
+        if action == 'start':
+            cmd = f'systemctl start {bot_processes[bot_name]}'
+            print(f"Attempting to start bot {bot_name} with command: {cmd}")
+            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = p.communicate()
+            print(stdout.decode())
+            print(stderr.decode())
+            if p.returncode == 0:
+                print(f"Bot {bot_name} started successfully")
+            else:
+                print(f"Error starting bot {bot_name}")
+        elif action == 'stop':
+            cmd = f'systemctl stop {bot_processes[bot_name]}'
+            subprocess.run(cmd, shell=True)
+
     # get the status of the bots
     bot_statuses = []
     for bot_name in bot_processes:
@@ -61,6 +82,7 @@ def status():
 
 @app.route('/logs/<bot_name>')
 def logs(bot_name):
+    print(f"Logs requested for bot: {bot_name}")
     # check if bot exists
     if bot_name not in bot_processes:
         return f'{bot_name} not found', 404
@@ -82,4 +104,4 @@ def logs(bot_name):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, debug=True)
+    app.run(host='192.168.0.15', port=5000, debug=True)

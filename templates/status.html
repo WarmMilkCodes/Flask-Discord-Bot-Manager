@@ -1,40 +1,33 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Bot Status</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-qY0zvRLeV38o+xfyT/l/NXd14IWPPp+X9/gKjxHz2QVzBLHUIJzkFzl+83sEgFkjAaIMCyvsm98lX9jZlRo/aw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
-<body>
-	<h1>Bot Manager</h1>
-	<table>
-		<tr>
-			<th>Name</th>
-			<th>Status</th>
-			<th>CPU Usage</th>
-			<th>Memory Usage</th>
-			<th>Network Activity</th>
-			<th>Actions</th>
-		</tr>
-		{% for bot in bot_statuses %}
-		<tr>
-			<td>{{ bot.name }}</td>
-			<td>{{ bot.status }}</td>
-			<td>{{ bot.cpu_usage }}%</td>
-			<td>{{ bot.memory_usage }}%</td>
-			<td>Sent: {{ network_stats.sent }}, Received: {{ network_stats.received }}</td>
-			<td>
-				{% if bot.status == 'running' %}
-                <i class="fas fa-signal" style="color: green;"></i>
-                <span>Connected</span>
-				<a href="/stop/{{ bot.name }}">Stop</a>
-				{% else %}
-				<a href="/start/{{ bot.name }}">Start</a>
-                <i class="fas fa-signal" style="color: red;"></i>
-                <span>Offline</span>
-				{% endif %}
-			</td>
-		</tr>
-		{% endfor %}
-	</table>
-</body>
+  <head>
+    <title>Status Page</title>
+  </head>
+  <body>
+    <h1>Status Page</h1>
+    {% for bot in bot_statuses %}
+      <h2>{{ bot.name }}</h2>
+      <p>Status: {{ bot.status }}</p>
+      <p>CPU Usage: {{ bot.cpu_usage }}</p>
+      <p>Memory Usage: {{ bot.memory_usage }}</p>
+      {% if bot.status == 'stopped' %}
+		<form action="{{ url_for('status') }}" method="POST">
+			<input type="hidden" name="bot_name" value="{{ bot.name }}">
+			<input type="hidden" name="action" value="start">
+			<button type="submit">Start</button>
+		</form>
+	
+      {% elif bot.status == 'running' %}
+        <form action="{{ url_for('status') }}" method="POST">
+          <input type="hidden" name="bot_name" value="{{ bot.name }}">
+          <input type="hidden" name="action" value="stop">
+          <button type="submit">Stop</button>
+        </form>
+      {% endif %}
+      <hr>
+    {% endfor %}
+    <h2>Network Stats</h2>
+    <p>Sent: {{ network_stats.sent }}</p>
+    <p>Received: {{ network_stats.received }}</p>
+  </body>
 </html>
